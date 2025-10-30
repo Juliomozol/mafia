@@ -685,7 +685,7 @@ function verificarVitoria(canal) {
   return false;
 }
 
-} else {
+ else {
     // elimina o jogador votado normalmente
     candidate.alive = false;
     jogo.players.set(candidate.userId, candidate);
