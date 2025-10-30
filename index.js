@@ -667,32 +667,29 @@ async function handleCacadorDeath(deadId) {
   }
 }
 
-/* ---------- Checagem de vitória ---------- */
-function verificarVitoria(canal) {
+async function processarFimDeRodada(candidate, canal) {
   const vivos = Array.from(jogo.players.values()).filter(p => p.alive);
-  const mafiasAlive = vivos.filter(p => ['Assassino','Psicopata','Aprendiz de Assassino'].includes(p.role)).length;
+  const mafiasAlive = vivos.filter(p => ['Assassino', 'Psicopata', 'Aprendiz de Assassino'].includes(p.role)).length;
   const civisAlive = vivos.length - mafiasAlive;
+
   if (mafiasAlive === 0) {
-    canal.send('🏆 Cidade vence! Todas as máfias foram eliminadas.');
+    // Vitória da cidade
+    await canal.send('🏆 Cidade vence! Todas as máfias foram eliminadas.');
     jogo = null;
-    return true;
-  }
-  if (mafiasAlive >= 1 && civisAlive <= 2) {
-    canal.send(`🏆 Máfia vence! Restam ${mafiasAlive} máfias e ${civisAlive} civis.`);
+    return;
+  } else if (mafiasAlive >= 1 && civisAlive <= 2) {
+    // Vitória da máfia
+    await canal.send(`🏆 Máfia vence! Restam ${mafiasAlive} máfias e ${civisAlive} civis.`);
     jogo = null;
-    return true;
-  }
-  return false;
-
-
-} else {
-    // elimina o jogador votado normalmente
+    return;
+  } else {
+    // Não houve vitória, elimina o jogador votado normalmente
     candidate.alive = false;
     jogo.players.set(candidate.userId, candidate);
     jogo.dead = jogo.dead || [];
     jogo.dead.push({ id: candidate.userId, name: candidate.username, role: candidate.role });
     await canal.send(`🗳️ Pela votação, **${candidate.username}** foi eliminado. Cargo revelado: **${candidate.role}**.`);
-    
+
     // Se o eliminado for Assassino, promove Aprendiz
     if (candidate.role === 'Assassino') {
       const apr = Array.from(jogo.players.values()).find(p => p.role === 'Aprendiz de Assassino' && p.alive);
@@ -709,7 +706,6 @@ function verificarVitoria(canal) {
     }
   }
 }
-
 /* ---------- Caçador ao morrer ---------- */
 async function handleCacadorDeath(deadId) {
   const p = jogo.players.get(deadId);
