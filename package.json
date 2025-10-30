@@ -1,0 +1,13 @@
+{
+  "name": "mafia-bot",
+  "version": "1.0.0",
+  "description": "Bot Mafia para Discord.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.2",
+    "dotenv": "^16.4.5"
+  }
+}
