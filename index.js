@@ -2,13 +2,6 @@
 // Linguagem: JavaScript (Node.js)
 // Discord.js v14+
 
-client.once("ready", () => {
-  console.log(`🤖 Logado como ${client.user.tag}`);
-});
-
-client.login(process.env.TOKEN);
-
-
 const { 
   Client, 
   GatewayIntentBits, 
