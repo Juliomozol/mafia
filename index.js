@@ -65,16 +65,6 @@ const client = new Client({
  *  - Teste com um servidor de teste e 5+ contas (ou convide amigos) para verificar fluxo.
  */
 
-require('dotenv').config();
-
-const TOKEN = process.env.TOKEN;
-const GUILD_ID = process.env.GUILD_ID;
-const CHANNEL_ID = process.env.CHANNEL_ID;
-
-if (!TOKEN || !GUILD_ID || !CHANNEL_ID) {
-  console.error('ERRO: Defina TOKEN, GUILD_ID e CHANNEL_ID no .env');
-  process.exit(1);
-}
 
 /* ---------- TEMPOS (ms) ---------- */
 const TIME_ASSASSIN_FALLBACK = 10000; // 10s (assassino primeira janela)
