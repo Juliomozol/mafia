@@ -685,6 +685,86 @@ function verificarVitoria(canal) {
   return false;
 }
 
+} else {
+    // elimina o jogador votado normalmente
+    candidate.alive = false;
+    jogo.players.set(candidate.userId, candidate);
+    jogo.dead = jogo.dead || [];
+    jogo.dead.push({ id: candidate.userId, name: candidate.username, role: candidate.role });
+    await canal.send(`🗳️ Pela votação, **${candidate.username}** foi eliminado. Cargo revelado: **${candidate.role}**.`);
+    
+    // Se o eliminado for Assassino, promove Aprendiz
+    if (candidate.role === 'Assassino') {
+      const apr = Array.from(jogo.players.values()).find(p => p.role === 'Aprendiz de Assassino' && p.alive);
+      if (apr) {
+        apr.role = 'Assassino';
+        jogo.players.set(apr.userId, apr);
+        await canal.send(`🔁 O Aprendiz de Assassino (**${apr.username}**) assumiu o papel de Assassino!`);
+      }
+    }
+
+    // Se for Caçador, aplica efeito imediato
+    if (candidate.role === 'Caçador') {
+      await handleCacadorDeath(candidate.userId);
+    }
+  }
+}
+
+/* ---------- Caçador ao morrer ---------- */
+async function handleCacadorDeath(deadId) {
+  const p = jogo.players.get(deadId);
+  if (!p) return;
+  try {
+    const u = await client.users.fetch(deadId);
+    const dm = await u.createDM();
+    await dm.send('💀 Você morreu. Como Caçador, você pode escolher um jogador para matar em 10s. Responda: matar <nome>');
+    const filter = m => m.author.id === deadId;
+    const collected = await dm.awaitMessages({ filter, max: 1, time: TIME_CACADOR }).catch(() => null);
+    if (collected && collected.first()) {
+      const txt = collected.first().content.trim();
+      if (txt.toLowerCase().startsWith('matar ')) {
+        const targetName = txt.substring(6).trim().toLowerCase();
+        const target = Array.from(jogo.players.values()).find(x => x.username.toLowerCase() === targetName && x.alive);
+        if (target) {
+          target.alive = false;
+          jogo.players.set(target.userId, target);
+          jogo.dead = jogo.dead || [];
+          jogo.dead.push({ id: target.userId, name: target.username, role: target.role });
+          const canal = await client.channels.fetch(jogo.channelId);
+          await canal.send(`🏹 O Caçador (**${p.username}**) matou **${target.username}** antes de morrer. Cargo revelado: **${target.role}**.`);
+        } else {
+          await dm.send('Alvo inválido ou já morto. Poder perdido.');
+        }
+      } else {
+        await dm.send('Formato inválido. Poder perdido.');
+      }
+    } else {
+      await dm.send('Tempo esgotado. Poder perdido.');
+    }
+  } catch (err) {
+    console.warn('handleCacadorDeath erro', err);
+  }
+}
+
+/* ---------- Checagem de vitória ---------- */
+function verificarVitoria(canal) {
+  const vivos = Array.from(jogo.players.values()).filter(p => p.alive);
+  const mafiasAlive = vivos.filter(p => ['Assassino','Psicopata','Aprendiz de Assassino'].includes(p.role)).length;
+  const civisAlive = vivos.length - mafiasAlive;
+
+  if (mafiasAlive === 0) {
+    canal.send('🏆 Cidade vence! Todas as máfias foram eliminadas.');
+    jogo = null;
+    return true;
+  }
+  if (mafiasAlive >= 1 && civisAlive <= 2) {
+    canal.send(`🏆 Máfia vence! Restam ${mafiasAlive} máfias e ${civisAlive} civis.`);
+    jogo = null;
+    return true;
+  }
+  return false;
+}
+
 /* ---------- Mensagens de erro/controle e login ---------- */
 client.on('error', console.error);
 client.login(TOKEN);
