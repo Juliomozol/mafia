@@ -690,8 +690,9 @@ client.on('error', console.error);
 client.login(TOKEN);
 
 
-      await user.send('Tempo esgotado. Poder perdido.');
-    }
+setTimeout(async () => {
+  await user.send('Tempo esgotado. Poder perdido.');
+}, 30000);
   } catch (err) {
     console.warn('handleCacadorDeath erro', err);
   }
