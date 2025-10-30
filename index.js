@@ -84,8 +84,8 @@ client.once(Events.ClientReady, async () => {
 client.on(Events.InteractionCreate, async interaction => {
   try {
     if (interaction.isChatInputCommand() && interaction.commandName === 'cidade') {
-      if (!interaction.member.permissions.has('Administrator')) return interaction.reply({ content: 'Apenas admins podem abrir o lobby.', flags: InteractionResponseFlags.Ephemeral });
-      if (jogo) return interaction.reply({ content: 'Já existe um jogo em andamento.', flags: InteractionResponseFlags.Ephemeral });
+      if (!interaction.member.permissions.has('Administrator')) return interaction.reply({ content: 'Apenas admins podem abrir o lobby.', ephemeral: true });
+      if (jogo) return interaction.reply({ content: 'Já existe um jogo em andamento.', ephemeral: true });
 
       lobby.clear();
       const entrarBtn = new ButtonBuilder().setCustomId('entrar_lobby').setLabel('🎮 Entrar no Jogo').setStyle(ButtonStyle.Success);
@@ -98,17 +98,17 @@ client.on(Events.InteractionCreate, async interaction => {
 
     if (interaction.isButton()) {
       if (interaction.customId === 'entrar_lobby') {
-        if (jogo) return interaction.reply({ content: '⏳ Jogo já começou', flags: InteractionResponseFlags.Ephemeral });
-        if (lobby.has(interaction.user.id)) return interaction.reply({ content: 'Você já entrou no lobby.', flags: InteractionResponseFlags.Ephemeral });
+        if (jogo) return interaction.reply({ content: '⏳ Jogo já começou', ephemeral: true });
+        if (lobby.has(interaction.user.id)) return interaction.reply({ content: 'Você já entrou no lobby.', ephemeral: true });
         lobby.set(interaction.user.id, interaction.user.username);
         return interaction.reply({ content: `✅ ${interaction.user.username} entrou no lobby! (${lobby.size})`, ephemeral: true });
       }
       if (interaction.customId === 'iniciar_jogo') {
-        if (!interaction.member.permissions.has('Administrator')) return interaction.reply({ content: 'Apenas admins podem iniciar.', flags: InteractionResponseFlags.Ephemeral });
-        if (jogo) return interaction.reply({ content: 'Jogo já em andamento.', flags: InteractionResponseFlags.Ephemeral });
-        if (lobby.size < 5) return interaction.reply({ content: 'Mínimo 5 jogadores para iniciar.', flags: InteractionResponseFlags.Ephemeral });
+        if (!interaction.member.permissions.has('Administrator')) return interaction.reply({ content: 'Apenas admins podem iniciar.', ephemeral: true });
+        if (jogo) return interaction.reply({ content: 'Jogo já em andamento.', ephemeral: true });
+        if (lobby.size < 5) return interaction.reply({ content: 'Mínimo 5 jogadores para iniciar.', ephemeral: true });
 
-        await interaction.reply({ content: '🎲 Iniciando o jogo... enviando cargos via DM.', flags: InteractionResponseFlags.Ephemeral });
+        await interaction.reply({ content: '🎲 Iniciando o jogo... enviando cargos via DM.', ephemeral: true });
         const channel = await client.channels.fetch(CHANNEL_ID);
         iniciarPartida(channel);
         return;
