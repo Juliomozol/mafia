@@ -106,7 +106,7 @@ client.on(Events.InteractionCreate, async interaction => {
       if (interaction.customId === 'iniciar_jogo') {
         if (!interaction.member.permissions.has('Administrator')) return interaction.reply({ content: 'Apenas admins podem iniciar.', ephemeral: true });
         if (jogo) return interaction.reply({ content: 'Jogo já em andamento.', ephemeral: true });
-        if (lobby.size < 5) return interaction.reply({ content: 'Mínimo 5 jogadores para iniciar.', ephemeral: true });
+        if (lobby.size < 7) return interaction.reply({ content: 'Mínimo 7 jogadores para iniciar.', ephemeral: true });
 
         await interaction.reply({ content: '🎲 Iniciando o jogo... enviando cargos via DM.', ephemeral: true });
         const channel = await client.channels.fetch(CHANNEL_ID);
