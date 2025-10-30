@@ -72,17 +72,6 @@ const TIME_ACTION = 15000; // 15s para demais ações da noite
 const TIME_VOTE = 30000; // 30s votação
 const TIME_CACADOR = 10000; // 10s para caçador executar
 
-/* ---------- INICIALIZAÇÃO ---------- */
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.DirectMessages
-  ],
-  partials: [Partials.Channel]
-});
 
 /* ---------- ESTADO GLOBAL ---------- */
 let lobby = new Map(); // userId -> username
