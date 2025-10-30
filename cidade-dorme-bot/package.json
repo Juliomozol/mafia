@@ -1,7 +1,7 @@
 {
-  "name": "cidade-dorme-bot",
+  "name": "mafia-bot",
   "version": "1.0.0",
-  "description": "Bot Cidade Dorme para Discord.js",
+  "description": "Bot Mafia para Discord.js",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
